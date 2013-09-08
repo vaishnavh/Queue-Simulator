@@ -6,18 +6,15 @@ public class Time {
 		hh = 0;
 		mm = 0;
 		ss = 0;
+		ff = new Double(0);
 	}
 	public Time(Time t){
 		this.hh = t.hh;
 		this.mm = t.mm;
 		this.ss = t.ss;
+		this.ff = t.ff;
 	}
-	public void setTime(int s){
-		increment(0, 0, new Double(s));
-	}
-	public void setTime(Double s){
-		increment(0, 0, s);
-	}
+
 	
 	public Time increment(int s){
 		//Overloaded
@@ -30,6 +27,8 @@ public class Time {
 	}
 	public Time increment(int h, int m, Double s){
 		//Increment time by h:m:s amount
+		//Log.enter("Incrementing "+this.toString()+" by "+s.toString()+" seconds");
+
 		this.ff+= s;		
 		this.ss+=ff.intValue();
 		this.mm+=(this.ss/60)+m;
@@ -41,6 +40,7 @@ public class Time {
 			System.err.println("Simulation went beyond a day. Time stamp have been wrapped down. Output might be erroneous.");
 		}
 		this.hh%=24;
+		//Log.enter("Incremented to "+this.toString());
 		return this;
 	}
 	
@@ -59,7 +59,7 @@ public class Time {
 	}
 	
 	public boolean equalTo(Time t){
-		return (this.hh == t.hh && this.mm == t.mm && this.ss == t.ss && this.ff == t.ff);
+		return (this.hh == t.hh && this.mm == t.mm && this.ss == t.ss && this.ff.equals(t.ff));
 	}
 	
 	public boolean atLeast(Time t){
@@ -67,7 +67,6 @@ public class Time {
 	}
 	
 	public String toString(){
-		
 		return Integer.toString(hh) + ":" + Integer.toString(mm)+ ":" +Double.toString(new Double(ss)+ff);
 	}
 	public int toSeconds(){

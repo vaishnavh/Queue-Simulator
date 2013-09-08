@@ -6,7 +6,7 @@ public class ExitQueue {
 	public void move(){
 			QueueElement head = this.exitQueue.peek();
 			if(head!=null){
-				if(new Time(head.getStartTime()).increment(head.getQuantity()).equalTo(QueueSimulator.time)){
+				if(new Time(head.getStartTime()).increment(head.getQuantity()).equalTo(QueueSimulator.getTime())){
 					this.exitQueue.poll();
 				}
 			}

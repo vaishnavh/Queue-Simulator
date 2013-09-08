@@ -10,7 +10,9 @@ public class QueueElement {
 		WAIT, TRANSACT, EXIT
 	}
 	private ElementState state;
-	private void setQuantity(int quantity){
+	
+	
+	public void setQuantity(int quantity){
 		this.quantity = quantity;
 	}
 	
@@ -42,13 +44,25 @@ public class QueueElement {
 		
 	}
 	
-	private void finishTransaction(){
+	public void finishTransaction(){
 		int transferred = counter.finishTransaction(quantity);
 		//Print some output calling Display class
+		//Add to exit queue
+		Log.enter("Sending "+ this.toString());
+		QueueSimulator.sendToExitQueue(this);
 	}
 	
 	public void getReadyToExit(){
 		this.resetStartTime();
 		QueueSimulator.getActionQueue().addAction(new Action(this, Action.ActionType.LEAVE));
+	}
+	
+	public void enter(){
+		Log.enter("Adding" + this.toString());
+		QueueSimulator.allowNewElement(this);
+	}
+	
+	public String toString(){
+		return "Element <" + this.key + ", "+this.quantity+">";
 	}
 }
