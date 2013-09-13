@@ -1,0 +1,23 @@
+README FOR QUEUE SIMULATOR
+
+To compile and run the simulator, enter
+	> ./run
+Ensure permissions have been given to run the script:
+	> chmod +x run
+
+The program gets user input from console, for the probability distribution used
+and to initialize values for the counters.
+Mention either "Poisson" or "Uniform" or "Enumerated" - these are the three
+implemented probability distributions.
+
+
+The output is of the form of time labelled activities, one per line.
+The output is synchronized with real-time.
+<time_stamp> <activity>
+...
+
+The simulation can extend upto a day beyond which time handling has not been
+done.
+
+Caution : Any wrong input entered will throw an exception if it does
+not prompt the user for corrected value. 
