@@ -2,6 +2,9 @@ package simulator;
 
 import simulator.Log.MessageType;
 
+
+//A counter object containing some quantity to be transacted; is always in state FREE, BUSY or CLOSED
+
 public class Counter<Content> extends AbstractCounter<Content> {
 	protected static enum CounterState {
 		FREE, CLOSED, BUSY
@@ -9,7 +12,9 @@ public class Counter<Content> extends AbstractCounter<Content> {
 
 	private CounterState state;
 	private CounterSet<Content> counterSet;
+	private QueueElement<Content> element;
 	
+	//Makes a transaction for a request of atmost reductionAmount based on how much is available
 	private int reduceQuantity(int reductionAmount) { 
 		//Removes as much as possible as perthe request
 		//Returns amount that was transacted
@@ -20,7 +25,7 @@ public class Counter<Content> extends AbstractCounter<Content> {
 			transacted = quantity;
 			this.quantity = 0;
 		} else {
-			
+			//Enough available; empty as much as the request
 			transacted = reductionAmount;
 			this.quantity -= reductionAmount;
 			this.counterSet.getQueueSimulator().getLog().enter(new Message<Content>(this, reductionAmount, quantity, MessageType.COMPLETE));
@@ -28,6 +33,7 @@ public class Counter<Content> extends AbstractCounter<Content> {
 		return transacted;
 	}
 
+	//Initialize
 	protected Counter(CounterSet<Content> counterSet, int key) {
 		state = CounterState.FREE; // When we run first update it will close
 		quantity = 0;
@@ -35,14 +41,16 @@ public class Counter<Content> extends AbstractCounter<Content> {
 		this.counterSet = counterSet;
 	}
 
-	protected void setQuantity(int quantity) { // To initialize value of amount
-												// of goods present in a counter
+	//Set how much the counter has
+	protected void setQuantity(int quantity) {
+												
 		state = CounterState.FREE;
 		this.quantity = quantity;
 	}
 
-	//Refer abstract class for what these do
+	//Frees the counter of the transacting element
 	protected void freeCounter() {
+		element = null;
 		if(quantity>0){
 			this.state = CounterState.FREE;
 			this.counterSet.getQueueSimulator().getLog().enter(new Message<Content>(this, MessageType.FREED));
@@ -51,10 +59,11 @@ public class Counter<Content> extends AbstractCounter<Content> {
 		}
 	}
 
+	//Checks whether there are any more goods left; if no, it closes the counter
 	protected void updateState() {
 		if (quantity == 0) {
 			if (this.state != CounterState.CLOSED) {
-				//If just closed, print it
+
 				this.state = CounterState.CLOSED;
 				this.counterSet.getQueueSimulator().getLog().enter(new Message<Content>(this, MessageType.CLOSED));
 			}
@@ -62,19 +71,30 @@ public class Counter<Content> extends AbstractCounter<Content> {
 		}
 	}
 
+	
+	//Are there objects left?
 	protected boolean isFree() {
 		return (state == CounterState.FREE);
 	}
 
+	//Is the counter closed?
 	protected boolean isClosed() {
 		return (state == CounterState.CLOSED);
 	}
 
+	
+	//Returns how much is avaliable at the counter  for the given request
 	protected int available(int limit) {
 		if (quantity <= limit) {
 			return quantity;
 		}
 		return limit;
+	}
+	
+	
+	//What state is the counter at
+	protected CounterState getState(){
+		return this.state;
 	}
 
 	//Complete transaction and return how much was transacted
@@ -85,7 +105,24 @@ public class Counter<Content> extends AbstractCounter<Content> {
 		return transacted;
 	}
 
+	//Assigns an element to the counter and makes the counter busy
+	protected void occupy(QueueElement<Content> element){
+		this.state = CounterState.BUSY;
+		this.element = element;
+	}
+
+	
+	//Which element is transacting currently?
+	protected QueueElement<Content> getElement(){
+		return this.element;
+	}
+	
+	
 	public String toString() {
-		return "Counter <" + key + ", " + this.quantity + ">";
+		String ret = "Counter <" + key + ", " + this.quantity + ">";
+		if(element!=null){
+			ret = ret + " <--> "+element.toString();
+		}
+		return ret;
 	}
 }

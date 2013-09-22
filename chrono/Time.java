@@ -39,8 +39,8 @@ public class Time {
 		this.mm+=(this.ss/60)+m;
 		this.hh+=(this.mm/60)+h;
 		this.ff-=ff.intValue();
-		this.ss%=60;
-		this.mm%=60;
+		this.ss=this.ss%60;
+		this.mm=this.mm%60;
 		//When simulation goes beyond a day, er, we have a problem
 		if(this.hh>=24){
 			System.err.println("Simulation went beyond a day. Time stamp have been wrapped down. Output might be erroneous.");
@@ -75,7 +75,7 @@ public class Time {
 	}
 	
 	public String toString(){
-		return Integer.toString(hh) + ":" + Integer.toString(mm)+ ":" +Double.toString(new Double(ss)+Math.round(ss*100)/100);
+		return Integer.toString(hh) + ":" + Integer.toString(mm)+ ":" +Double.toString(new Double(ss)+Math.round(ff*100)/100);
 	}
 	public Double toSeconds(){
 		//How many seconds since zero have passed?

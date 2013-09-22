@@ -3,9 +3,9 @@ package simulator;
 import simulator.Log.MessageType;
 import chrono.Time;
 
+//This is a packet of information specifying an action that is to be done sometime later
 public class Action<Content> {
-	//This keeps note of which element is at which counter;
-	//Or whether it is about to exit/enter
+
 	private Counter<Content> counter;
 	private QueueElement<Content> element;
 	private Time time; //When this has to be executed
@@ -18,6 +18,7 @@ public class Action<Content> {
 
 	private ActionType type; //What kind of action
 
+	//Initialize an action specifying end of a transaction
 	protected Action(ActionQueue<Content> actionQueue, Counter<Content> counter, QueueElement<Content> element) {
 		//Keep note of the fact that t units later the element
 		//has to leave for the exit queue and end the transaction. t is the no. of goods
@@ -30,10 +31,12 @@ public class Action<Content> {
 		type = ActionType.END_TRANSACTION;
 	}
 
+	//When does this action have to be performed?
 	protected Time getTime() {
 		return this.time;
 	}
 
+	//Initialize an entry/exit action
 	protected Action(ActionQueue<Content> actionQueue, QueueElement<Content> element, ActionType action) { 
 		this.actionQueue = actionQueue;
 		if (action == ActionType.LEAVE) {
@@ -54,22 +57,27 @@ public class Action<Content> {
 		} 
 	}
 	
+	
+	//To which simulator is this working for?
 	protected QueueSimulator<Content> getQueueSimulator(){
 		return this.actionQueue.getQueueSimulator();
 	}
-	protected void perform() {
-		//Execute the stored action
+	
+	//Execute the stored action
+	protected void perform() {		
 		Message<Content> message;
 		if (this.isEnter()) {
+			//Allow element into entry queue
 			message = new Message<Content>(this.element, MessageType.QUEUE_ENTER);
 			this.getQueueSimulator().getLog().enter(message);
 			this.getQueueSimulator().allowNewElement(element);
 		} else if (this.isEndTransaction()) {
+			//Finish transaction with a counter
 			message = new Message<Content>(this.element, this.counter, MessageType.FINISH_TRANSACTION);
-			System.out.println("Check this"+counter.toString());
 			this.getQueueSimulator().getLog().enter(message);
-			this.getQueueSimulator().endTransaction(element, counter);
+			this.getQueueSimulator().endTransaction(counter);
 		} else if (this.isLeave()) {
+			//Let the element leave exit queue
 			message = new Message<Content>(this.element, MessageType.LEFT);
 			this.getQueueSimulator().getLog().enter(message);
 			this.getQueueSimulator().sendOff();
@@ -77,15 +85,13 @@ public class Action<Content> {
 	}
 
 	
-	//Boolean functions for actions
+	//Boolean functions for action type
 	protected boolean isEndTransaction() {
 		return (this.type == ActionType.END_TRANSACTION);
 	}
-
 	protected boolean isEnter() {
 		return (this.type == ActionType.ENTER);
 	}
-
 	protected boolean isLeave() {
 		return (this.type == ActionType.LEAVE);
 	}
