@@ -41,7 +41,7 @@ public class EntryQueue<Content> extends SimQueue<QueueElement<Content>>{
 				this.queueSimulator.getLog().enter(new Message<Content>(head, MessageType.DIRECT_EXIT));
 				entryQueue.poll();
 				this.queueSimulator.sendToExitQueue(head);
-				
+				move();
 			}else{
 				Counter<Content> counter = this.queueSimulator.getFreeCounter();
 				if (counter != null) {

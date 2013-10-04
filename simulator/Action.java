@@ -81,6 +81,7 @@ public class Action<Content> {
 			message = new Message<Content>(this.element, MessageType.LEFT);
 			this.getQueueSimulator().getLog().enter(message);
 			this.getQueueSimulator().sendOff();
+			this.getQueueSimulator().getLog().enter();
 		}
 	}
 

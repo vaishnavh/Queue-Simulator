@@ -38,14 +38,18 @@ public class Log<Content> {
 		protected void enter(Message<Content> message){
 			Time time = queueSimulator.getTime();
 			String timeStamp = time.toString()+" : ";
-			this.addState(entryLog, queueSimulator.getEntryQueueState());
-			this.addState(exitLog, queueSimulator.getExitQueueState());
-			this.addState(countersLog, queueSimulator.getCounterSetState());
+			enter();
 			message.setTime(time);
 			execution.add(message);
 		}
 		
 		
+		//Update sublogs
+		protected void enter(){
+			this.addState(entryLog, queueSimulator.getEntryQueueState());
+			this.addState(exitLog, queueSimulator.getExitQueueState());
+			this.addState(countersLog, queueSimulator.getCounterSetState());
+		}
 		//initialize
 		protected Log(QueueSimulator<Content> queueSimulator){
 			entryLog = new Vector<String>();

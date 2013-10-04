@@ -1,9 +1,9 @@
 package chrono;
 
-
+// Handles a Time object and handles sleeping of
+// process to synchronize with real time
 public class Clock {
-	// Handles a Time object and handles sleeping of
-	// process to synchronize with real time
+
 	private boolean stop; // Has execution of queue simulator stopped?
 	private Time time = new Time(); // current time
 
